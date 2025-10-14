@@ -57,7 +57,9 @@ public class JSpecifyGeneratorMojo extends AbstractMojo {
             }
 
             // Register generated sources directory as a compile source root
-            project.addCompileSourceRoot(generatedSourcesDirectory.getAbsolutePath());
+            if (!sourceDir.getAbsolutePath().equals(generatedSourcesDirectory.getAbsolutePath())) {
+                project.addCompileSourceRoot(generatedSourcesDirectory.getAbsolutePath());
+            }
             getLog().info("Added generated sources root: " + generatedSourcesDirectory.getAbsolutePath());
         } catch (IOException e) {
             throw new MojoExecutionException("Error generating package-info.java files", e);
@@ -71,16 +73,6 @@ public class JSpecifyGeneratorMojo extends AbstractMojo {
                         "Could not create generated sources directory: " + generatedSourcesDirectory);
             }
             getLog().info("Created generated sources directory: " + generatedSourcesDirectory);
-        } else {
-            // Clean up existing generated files
-            try (Stream<Path> existingFiles = Files.walk(generatedSourcesDirectory.toPath())) {
-                existingFiles.filter(Files::isRegularFile).forEach(path -> path.toFile()
-                        .delete());
-            } catch (IOException e) {
-                throw new MojoExecutionException(
-                        "Could not clean up existing generated files in: " + generatedSourcesDirectory, e);
-            }
-            getLog().info("Cleaned up existing generated files in: " + generatedSourcesDirectory);
         }
     }
 
