@@ -1,0 +1,28 @@
+name: Maven Verify
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    uses: dfuchss/actions/.github/workflows/maven.yml@main
+    with:
+      deploy: false
+    secrets:
+      CENTRAL_USER: ""
+      CENTRAL_TOKEN: ""
+      GPG_KEY: ""
